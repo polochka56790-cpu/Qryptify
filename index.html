@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Lab</title>
+<style>
+
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background: #efefea;
+display: flex;
+justify-content: center; 
+}
+
+.container {
+width: 100%;
+max-width: 1100px;
+padding: 20px;
+box-sizing: border-box;
+}
+
+.header {
+padding: 15px 0;
+display: flex;
+align-items: center;
+gap: 10px;
+}
+
+.logo-text {
+font-size: 14px;
+}
+
+.line {
+height: 3px;
+background: #000;
+margin: 10px 0;
+}
+
+
+.main-content {
+display: flex;
+flex-wrap: wrap; 
+gap: 15px;
+margin-top: 20px;
+}
+
+.left {
+flex: 2;
+min-width: 300px;
+background: #fff;
+padding: 20px;
+border: 1px solid #ccc;
+box-sizing: border-box;
+}
+
+.right {
+flex: 1; 
+min-width: 250px;
+background: #fff;
+padding: 20px;
+border: 1px solid #ccc;
+box-sizing: border-box;
+}
+
+h2, h3 {
+margin-top: 0;
+}
+
+.encode-options a {
+color: #005599;
+text-decoration: none;
+}
+
+.input {
+width: 100%;
+height: 130px;
+border: 1px solid #aaa;
+margin-top: 10px;
+padding: 5px;
+box-sizing: border-box;
+}
+
+.size-box {
+margin: 15px 0;
+}
+
+.btn {
+background: #e6e6e6;
+border: 1px solid #999;
+padding: 8px 12px;
+cursor: pointer;
+}
+
+.qr-box {
+width: 200px;
+height: 200px;
+border: 1px solid #aaa;
+display: flex;
+align-items: center;
+justify-content: center;
+margin-bottom: 10px;
+}
+
+.link {
+width: 100%;
+padding: 8px;
+border: 1px solid #bbb;
+box-sizing: border-box;
+}
+
+.fake-ad {
+width: 100%;
+height: 160px;
+background: #ddd;
+border: 1px solid #bbb;
+display: flex;
+justify-content: center;
+align-items: center;
+margin: 15px 0;
+font-style: italic;
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header class="header">
+<div class="logo">
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=40x40&data=logo" alt="">
+<div class="logo-text">
+<b>QR Lab</b><br>
+Генератор QR-кодов / QR Code Generator
+</div>
+</div>
+</header>
+
+<div class="line"></div>
+
+<main class="main-content">
+
+
+<section class="left">
+<h2>ГЕНЕРАТОР QR КОДОВ</h2>
+
+<div class="encode-options">
+закодировать:
+<a href="#">любой текст</a>,
+<a href="#">ссылку на сайт</a>,
+<a href="#">визитную карточку</a>,
+<a href="#">sms-сообщение</a>
+</div>
+
+<label class="label">введите текст для кодирования:</label>
+<textarea id="text" class="input"></textarea>
+
+<div class="size-box">
+размер:
+<label><input type="radio" name="size" value="150"> 1</label>
+<label><input type="radio" name="size" value="200"> 2</label>
+
+<button id="generate" class="btn">создать код (ctrl+enter)</button>
+</div>
+
+<div class="fake-ad">Здесь могла быть ваша реклама 😊</div>
+
+<h3>ИСПОЛЬЗОВАНИЕ:</h3>
+<ol>
+<li>Возьмите мобильный телефон с камерой.</li>
+<li>Запустите программу для сканирования кода.</li>
+<li>Наведите объектив камеры на код.</li>
+<li>Получите информацию!</li>
+</ol>
+
+<h3>ПРИМЕНЕНИЕ:</h3>
+<p>
+QR-коды используют для размещения изображений в интернете, нанесения
+на визитные карточки, буклеты, рекламные вывески и многое другое.
+</p>
+
+<h3>ТЕХНОЛОГИИ ЭТОГО САЙТА:</h3>
+<ul>
+<li>HTML — структура страницы</li>
+<li>CSS — оформление и стили</li>
+<li>JavaScript — создание QR-кодов</li>
+<li>API QRServer — генерация изображений</li>
+</ul>
+</section>
+
+<section class="right">
+<h3>ЧТО ТАКОЕ QR-КОД:</h3>
+<p>
+QR код «QR» — Quick Response — Быстрый Отклик — это
+двухмерный штрихкод (бар-код), предоставляющий информацию
+для быстрого её распознавания с помощью камеры на мобильном телефоне.
+</p>
+
+<h3>ВАШ QR-КОД:</h3>
+<div class="qr-box">
+<img id="qrImage" src="" alt="">
+</div>
+
+<label>Постоянная ссылка на изображение:</label>
+<input id="link" class="link" readonly>
+
+<button id="download" class="btn small" disabled>Скачать PNG</button>
+</section>
+
+</main>
+</div>
+
+<script>
+const textInput = document.getElementById("text");
+const img = document.getElementById("qrImage");
+const linkInput = document.getElementById("link");
+const downloadBtn = document.getElementById("download");
+
+document.getElementById("generate").addEventListener("click", () => {
+const text = textInput.value.trim();
+if (!text) return alert("Введите текст!");
+
+const size = document.querySelector("input[name='size']:checked").value;
+
+const url = `https://api.qrserver.com/v1/create-qr-code/?size=${size}x${size}&data=${encodeURIComponent(text)}`;
+
+img.src = url;
+linkInput.value = url;
+downloadBtn.disabled = false;
+});
+
+downloadBtn.addEventListener("click", async () => {
+const response = await fetch(img.src);
+const blob = await response.blob();
+const a = document.createElement("a");
+a.href = URL.createObjectURL(blob);
+a.download = "qrcode.png";
+a.click();
+});
+</script>
+
+</body>
+</html>
